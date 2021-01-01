@@ -17,10 +17,20 @@ import odimappingbuilder.components.MappingComponent;
 import odimappingbuilder.components.MappingComponentCreator;
 
 public class ExcelReader {
+	public String[] readMappingName(String fileName) throws IOException {
+		FileInputStream excelFile = new FileInputStream(new File(fileName));
+        Workbook workbook = new XSSFWorkbook(excelFile);
+        Sheet sheet = workbook.getSheetAt(0);  
+        String projectCode=sheet.getRow(0).getCell(1).getStringCellValue();
+        String folder=sheet.getRow(1).getCell(1).getStringCellValue();
+        String mapping=sheet.getRow(2).getCell(1).getStringCellValue();
+        
+        workbook.close();
+        excelFile.close();
+        return new String[] {projectCode,folder,mapping};
+	}
 	public List<MappingComponent> readExcel(String fileName) throws IOException {
-		
-		//String fileName="/home/cihan/Documents/Mapping.xlsx";
-		
+			
 		FileInputStream excelFile = new FileInputStream(new File(fileName));
         Workbook workbook = new XSSFWorkbook(excelFile);
         Sheet sheet = workbook.getSheetAt(0);        
@@ -31,20 +41,20 @@ public class ExcelReader {
         List<List<String>> propertyList=new ArrayList<List<String>>();
                         
         
-        for(int i=0; i<sheet.getLastRowNum()-sheet.getFirstRowNum()+1; i++) {
+        for(int i=4; i<sheet.getLastRowNum()-sheet.getFirstRowNum()+1; i++) {
         	Row row=sheet.getRow(i);
         	 
         	List<String> rowArray=new ArrayList<String>();
 			if (row != null) {
 				for (Cell cell : row) {
 					String cellValue = dataFormatter.formatCellValue(cell);
-					System.out.print(cellValue + "\t");
+					//System.out.print(cellValue + "\t");
 					if (cellValue != null && cellValue != "") {
 						rowArray.add(cellValue);
 					}
 				}
 			}
-            System.out.println();
+            //System.out.println();
             
             
             if(rowArray.size()>0 && rowArray.get(0)!= null && rowArray.get(0)!="") {

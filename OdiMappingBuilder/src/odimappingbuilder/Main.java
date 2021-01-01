@@ -47,15 +47,10 @@ public class Main {
 		String schemapwd=prop.getProperty("schemapwd").trim();
 		String workrep=prop.getProperty("workrep").trim();
 		String odiuser=prop.getProperty("odiuser").trim();
-		String odiuserpwd=prop.getProperty("odiuserpwd").trim();
-		String projectCode=prop.getProperty("projectCode").trim();
-		String folderName=prop.getProperty("folderName").trim();
-		String mappingName=prop.getProperty("mappingName").trim();
-		
-		
-		
+		String odiuserpwd=prop.getProperty("odiuserpwd").trim();		
+				
 		OdiMappingBuilder builder=new OdiMappingBuilder();
-		builder.build(fileName, url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd, projectCode, folderName, mappingName);
+		builder.build(fileName, url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd);
 	}
 
 }

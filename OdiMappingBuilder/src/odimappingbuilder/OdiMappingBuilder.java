@@ -8,13 +8,17 @@ public class OdiMappingBuilder {
 	
 	private OdiMappingLib odiMappingLib;
 	
-	public void build(String fileName,String url, String driver, String schema, String schemapwd, String workrep, String odiuser,String odiuserpwd, String projectCode, String folderName, String mappingName) throws Exception {
+	public void build(String fileName,String url, String driver, String schema, String schemapwd, String workrep, String odiuser,String odiuserpwd) throws Exception {
 		
 		ExcelReader excelReader=new ExcelReader();
 		List<MappingComponent> componentList=excelReader.readExcel(fileName);
+		String[] mName=excelReader.readMappingName(fileName);
+		
+		System.out.println("Project: "+mName[0]+"\nFolder: "+mName[1]+ "\nMapping: "+mName[2]+"\nmapping build start");
+		
 		
 		odiMappingLib=new OdiMappingLib();
-		odiMappingLib.connect(url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd, projectCode, folderName, mappingName);
+		odiMappingLib.connect(url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd, mName[0], mName[1], mName[2]);
 		
 		odiMappingLib.clearMapping();
 		

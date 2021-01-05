@@ -2,23 +2,50 @@ package odimappingbuilder;
 import java.util.List;
 
 import odimappingbuilder.components.*;
+import oracle.odi.core.OdiInstance;
 
 
 public class OdiMappingBuilder {
 	
 	private OdiMappingLib odiMappingLib;
 	
+	public void build(String fileName,OdiInstance odiInstance) throws Exception {
+		buildMapping(fileName,odiInstance, null, null, null, null, null, null, null);
+	}
 	public void build(String fileName,String url, String driver, String schema, String schemapwd, String workrep, String odiuser,String odiuserpwd) throws Exception {
+		buildMapping(fileName,null,url, driver,  schema,  schemapwd, workrep, odiuser, odiuserpwd);
+	}
+	
+	private void buildMapping(String fileName,OdiInstance odiInstance,String url, String driver, String schema, String schemapwd, String workrep, String odiuser,String odiuserpwd) throws Exception {
 		
-		ExcelReader excelReader=new ExcelReader();
-		List<MappingComponent> componentList=excelReader.readExcel(fileName);
-		String[] mName=excelReader.readMappingName(fileName);
+		List<MappingComponent> componentList;
+		String[] mName;
+		
+		String extension=fileName.substring(fileName.lastIndexOf(".")+1);
+		if(extension.equals("xlsx")) {
+			ExcelReader excelReader=new ExcelReader();
+			componentList=excelReader.readExcel(fileName);
+			mName=excelReader.readMappingName(fileName);				
+		}
+		else {
+			TextReader textReader=new TextReader();
+			componentList=textReader.readText(fileName);
+			mName=textReader.readMappingName(fileName);
+		}
+		
 		
 		System.out.println("Project: "+mName[0]+"\nFolder: "+mName[1]+ "\nMapping: "+mName[2]+"\nmapping build start");
 		
 		
 		odiMappingLib=new OdiMappingLib();
-		odiMappingLib.connect(url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd, mName[0], mName[1], mName[2]);
+		
+		if(odiInstance==null) {
+			odiMappingLib.connect(url, driver, schema, schemapwd, workrep, odiuser, odiuserpwd, mName[0], mName[1], mName[2]);
+		}
+		else {
+			odiMappingLib.connect(odiInstance, mName[0], mName[1], mName[2]);
+		}
+		
 		
 		odiMappingLib.clearMapping();
 		

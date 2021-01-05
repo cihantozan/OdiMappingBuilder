@@ -55,6 +55,19 @@ public class OdiMappingLib {
 	public OdiMappingLib() {
 		
 	}
+	
+	public void connect(OdiInstance odiInstance, String projectCode, String folderName, String mappingName) throws Exception {				
+		this.odiInstance=odiInstance;
+		this.projectCode = projectCode;
+		this.folderName = folderName;
+		this.mappingName = mappingName;					
+		
+		txnDef = new DefaultTransactionDefinition();
+		tm = odiInstance.getTransactionManager();
+		txnStatus = tm.getTransaction(txnDef);
+		
+		mapping = findMapping(projectCode, folderName, mappingName);
+	}	
 
 	public void connect(String url, String driver, String schema, String schemapwd, String workrep, String odiuser,String odiuserpwd, String projectCode, String folderName, String mappingName) throws Exception {				
 		this.url = url;
@@ -81,6 +94,7 @@ public class OdiMappingLib {
 		
 		mapping = findMapping(projectCode, folderName, mappingName);
 	}
+	
 	public void save() {
 		odiInstance.getTransactionalEntityManager().persist(mapping);
 		tm.commit(txnStatus);
@@ -152,7 +166,7 @@ public class OdiMappingLib {
 		connectComponent(source,name);
 	}
 	
-	public void addTable(String name, String source, String modelName, String tableName, List<String[]> targetColumns) throws AdapterException, MappingException {
+	public void addTable(String name, String source, String modelName, String tableName, List<String[]> targetColumns) throws Exception {
 		
         OdiDataStore odiDatastore = findDataStore(modelName, tableName);                
         IMapComponent component= mapping.createComponent(DatastoreComponent.COMPONENT_TYPE_NAME, odiDatastore);
@@ -178,8 +192,9 @@ public class OdiMappingLib {
 
 
 	
-	public OdiDataStore findDataStore(String modelName, String tableName) {
+	public OdiDataStore findDataStore(String modelName, String tableName) throws Exception {
 		OdiDataStore odiDatastore = ((IOdiDataStoreFinder)odiInstance.getTransactionalEntityManager().getFinder(OdiDataStore.class)).findByName(tableName, modelName);
+		if(odiDatastore==null) throw new Exception(modelName+" - "+tableName+" not found");
 		return odiDatastore;
 	}
 	
@@ -201,6 +216,7 @@ public class OdiMappingLib {
 		String[] path=folderName.split("/");		
 		
 		OdiProject project = ((IOdiProjectFinder)odiInstance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(projectCode);
+		if(project==null) throw new Exception(projectCode + " Project not found");
 		Collection<OdiFolder> projectFolders= project.getFolders();
 		OdiFolder currentFolder=null;
 		
